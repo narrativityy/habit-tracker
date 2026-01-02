@@ -8,62 +8,81 @@ A simple React application to track daily habits and visualize progress over tim
 - Mark habits complete each day
 - Track streaks and completion history
 - Visualize progress with charts and calendars
+- Dark mode support
 
 ## Tech Stack
 
-- **React** with Vite for fast development
-- **Docker** for containerized development environment
+- **Frontend**: React + Vite + Tailwind CSS
+- **Backend**: Express.js + MongoDB
+- **Docker** for containerized development
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18+)
-- [Docker](https://docs.docker.com/get-docker/) (optional, for containerized development)
+- [Docker](https://docs.docker.com/get-docker/)
 
-### Run Locally (without Docker)
+### Run with Docker (Recommended)
 
-```bash
-npm install
-npm run dev
-```
-
-Open http://localhost:5173 in your browser.
-
-### Run with Docker
-
-Using Docker Compose (recommended):
+Start all services (frontend, backend, MongoDB):
 
 ```bash
 docker-compose up
 ```
 
-Or build and run manually:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001
+- MongoDB: localhost:27017
 
+### Run Locally (without Docker)
+
+**Frontend:**
 ```bash
-docker build -t habit-tracker .
-docker run -p 5173:5173 habit-tracker
+cd client
+npm install
+npm run dev
 ```
 
-For live reloading during development:
-
+**Backend:**
 ```bash
-docker run -p 5173:5173 -v $(pwd)/src:/app/src habit-tracker
+cd server
+npm install
+npm run dev
 ```
 
-Open http://localhost:5173 in your browser.
+Note: You'll need MongoDB running locally for the backend.
 
 ## Project Structure
 
 ```
 habit-tracker/
-├── src/                  # Application source code
-├── public/               # Static assets
-├── Dockerfile            # Container configuration
-├── docker-compose.yml    # Docker Compose configuration
+├── client/               # React frontend
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── context/      # React Context providers
+│   │   └── hooks/        # Custom hooks
+│   ├── Dockerfile
+│   └── package.json
+├── server/               # Express backend
+│   ├── server.js         # API routes & MongoDB models
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml    # Multi-container Docker config
 ├── DOCKER_GUIDE.md       # Docker learning guide
 └── BRAINSTORM.md         # Feature planning document
 ```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/habits | Get all habits |
+| POST | /api/habits | Create a habit |
+| PUT | /api/habits/:id | Update a habit |
+| DELETE | /api/habits/:id | Delete a habit |
+| POST | /api/habits/:id/toggle | Toggle completion for a date |
+| GET | /api/health | Health check |
 
 ## Documentation
 

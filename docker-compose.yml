@@ -1,7 +1,31 @@
 services:
-  app:
-    build: .
+  client:
+    build: ./client
     ports:
       - "5173:5173"
     volumes:
-      - ./src:/app/src
+      - ./client/src:/app/src
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/habit-tracker
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
