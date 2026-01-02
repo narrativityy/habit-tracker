@@ -1,16 +1,71 @@
-# React + Vite
+# Habit Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React application to track daily habits and visualize progress over time.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Add and manage habits
+- Mark habits complete each day
+- Track streaks and completion history
+- Visualize progress with charts and calendars
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React** with Vite for fast development
+- **Docker** for containerized development environment
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+)
+- [Docker](https://docs.docker.com/get-docker/) (optional, for containerized development)
+
+### Run Locally (without Docker)
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 in your browser.
+
+### Run with Docker
+
+Using Docker Compose (recommended):
+
+```bash
+docker-compose up
+```
+
+Or build and run manually:
+
+```bash
+docker build -t habit-tracker .
+docker run -p 5173:5173 habit-tracker
+```
+
+For live reloading during development:
+
+```bash
+docker run -p 5173:5173 -v $(pwd)/src:/app/src habit-tracker
+```
+
+Open http://localhost:5173 in your browser.
+
+## Project Structure
+
+```
+habit-tracker/
+├── src/                  # Application source code
+├── public/               # Static assets
+├── Dockerfile            # Container configuration
+├── docker-compose.yml    # Docker Compose configuration
+├── DOCKER_GUIDE.md       # Docker learning guide
+└── BRAINSTORM.md         # Feature planning document
+```
+
+## Documentation
+
+- [DOCKER_GUIDE.md](./DOCKER_GUIDE.md) - Step-by-step Docker tutorial
+- [BRAINSTORM.md](./BRAINSTORM.md) - Feature brainstorming and planning
