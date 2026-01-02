@@ -60,7 +60,7 @@ Tracking daily habits and visualizing progress over time to build consistency.
 | JSON file | Exportable, simple | Need backend to persist |
 | Backend + DB | Sync across devices | More complexity |
 
-**Decision:**
+**Decision:** MongoDB + Express backend for cross-device sync
 
 ---
 
@@ -135,21 +135,47 @@ Mo Tu We Th Fr Sa Su
 | Layer | Choice | Notes |
 |-------|--------|-------|
 | Framework | React + Vite | Already set up |
-| Styling | ? | CSS / Tailwind / CSS Modules |
-| State | ? | useState / Context / Zustand |
+| Styling | Tailwind | Utility-first CSS |
+| State | useState + Context | Built-in React, no extra deps |
 | Charts | ? | Recharts / Chart.js / Visx |
-| Storage | ? | LocalStorage / IndexedDB |
 | Date handling | ? | date-fns / dayjs / native |
+| Backend | Express.js | REST API |
+| Database | MongoDB | Cross-device sync |
+| Auth | ? | JWT / Session-based |
+
+### Architecture Overview
+
+```
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+│                 │      │                 │      │                 │
+│  React Frontend │ ──── │  Express API    │ ──── │    MongoDB      │
+│  (Vite + Docker)│ HTTP │  (Node.js)      │      │                 │
+│                 │      │                 │      │                 │
+└─────────────────┘      └─────────────────┘      └─────────────────┘
+     Port 5173                Port 3001              Port 27017
+```
+
+### API Endpoints (Planned)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/habits | Get all habits |
+| POST | /api/habits | Create a habit |
+| PUT | /api/habits/:id | Update a habit |
+| DELETE | /api/habits/:id | Delete a habit |
+| POST | /api/habits/:id/complete | Mark habit complete for a date |
+| DELETE | /api/habits/:id/complete | Unmark completion |
 
 ---
 
 ## Questions to Decide
 
 1. **Frequency options:** Daily only, or support weekly/custom schedules?
-2. **Data persistence:** Local-only or plan for sync later?
-3. **Styling approach:** Utility-first (Tailwind) or component CSS?
+2. ~~**Data persistence:** Local-only or plan for sync later?~~ → MongoDB for sync
+3. ~~**Styling approach:** Utility-first (Tailwind) or component CSS?~~ → Tailwind
 4. **Chart library:** Which one fits our visualization needs?
 5. **Mobile:** Responsive web or consider PWA features?
+6. **Authentication:** Do we need user accounts? (Required for multi-device sync)
 
 ---
 
