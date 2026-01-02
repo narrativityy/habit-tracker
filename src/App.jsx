@@ -1,34 +1,75 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { HabitProvider, useHabits } from './context/HabitContext'
+import HabitCard from './components/HabitCard'
+import AddHabitForm from './components/AddHabitForm'
 
-function App() {
-  const [count, setCount] = useState(0)
+function DarkModeToggle({ darkMode, setDarkMode }) {
+  return (
+    <button
+      onClick={() => setDarkMode(!darkMode)}
+      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+      aria-label="Toggle dark mode"
+    >
+      {darkMode ? (
+        <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+function Dashboard({ darkMode, setDarkMode }) {
+  const { habits } = useHabits()
+  const today = new Date()
+  const dateStr = today.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <header className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Habit Tracker</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">{dateStr}</p>
+          </div>
+          <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+        </header>
+
+        <main className="space-y-3">
+          {habits.length === 0 ? (
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+              No habits yet. Add your first habit to get started!
+            </p>
+          ) : (
+            habits.map(habit => (
+              <HabitCard key={habit.id} habit={habit} />
+            ))
+          )}
+          <AddHabitForm />
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 2)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
+  )
+}
+
+function App() {
+  const [darkMode, setDarkMode] = useState(false)
+
+  return (
+    <div className={darkMode ? 'dark' : ''}>
+      <HabitProvider>
+        <Dashboard darkMode={darkMode} setDarkMode={setDarkMode} />
+      </HabitProvider>
+    </div>
   )
 }
 
