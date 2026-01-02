@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HabitProvider, useHabits } from './context/HabitContext'
 import HabitCard from './components/HabitCard'
 import AddHabitForm from './components/AddHabitForm'
@@ -24,7 +24,7 @@ function DarkModeToggle({ darkMode, setDarkMode }) {
 }
 
 function Dashboard({ darkMode, setDarkMode }) {
-  const { habits } = useHabits()
+  const { habits, loading, error } = useHabits()
   const today = new Date()
   const dateStr = today.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -45,13 +45,23 @@ function Dashboard({ darkMode, setDarkMode }) {
         </header>
 
         <main className="space-y-3">
-          {habits.length === 0 ? (
+          {error && (
+            <div className="p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+              Error: {error}
+            </div>
+          )}
+
+          {loading ? (
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+              Loading habits...
+            </p>
+          ) : habits.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-8">
               No habits yet. Add your first habit to get started!
             </p>
           ) : (
             habits.map(habit => (
-              <HabitCard key={habit.id} habit={habit} />
+              <HabitCard key={habit._id} habit={habit} />
             ))
           )}
           <AddHabitForm />
@@ -62,7 +72,14 @@ function Dashboard({ darkMode, setDarkMode }) {
 }
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode')
+    return saved ? JSON.parse(saved) : false
+  })
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode))
+  }, [darkMode])
 
   return (
     <div className={darkMode ? 'dark' : ''}>

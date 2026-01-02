@@ -3,8 +3,8 @@ import { useHabits } from '../context/HabitContext'
 export default function HabitCard({ habit }) {
   const { toggleCompletion, isCompletedOn, getStreak, deleteHabit } = useHabits()
   const today = new Date()
-  const completed = isCompletedOn(habit.id, today)
-  const streak = getStreak(habit.id)
+  const completed = isCompletedOn(habit._id, today)
+  const streak = getStreak(habit._id)
 
   return (
     <div className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
@@ -14,8 +14,8 @@ export default function HabitCard({ habit }) {
     }`}>
       <div className="flex items-center gap-3">
         <button
-          onClick={() => toggleCompletion(habit.id, today)}
-          className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+          onClick={() => toggleCompletion(habit._id, today)}
+          className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
             completed
               ? 'bg-green-500 border-green-500 text-white'
               : 'border-gray-300 dark:border-gray-500 hover:border-green-400'
@@ -27,9 +27,16 @@ export default function HabitCard({ habit }) {
             </svg>
           )}
         </button>
-        <span className={`font-medium ${completed ? 'text-green-700 dark:text-green-400' : 'text-gray-700 dark:text-gray-200'}`}>
-          {habit.name}
-        </span>
+        <div>
+          <span className={`font-medium ${completed ? 'text-green-700 dark:text-green-400' : 'text-gray-700 dark:text-gray-200'}`}>
+            {habit.name}
+          </span>
+          {habit.description && (
+            <p className={`text-sm ${completed ? 'text-green-600 dark:text-green-500' : 'text-gray-500 dark:text-gray-400'}`}>
+              {habit.description}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -39,7 +46,7 @@ export default function HabitCard({ habit }) {
           </span>
         )}
         <button
-          onClick={() => deleteHabit(habit.id)}
+          onClick={() => deleteHabit(habit._id)}
           className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

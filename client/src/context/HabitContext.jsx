@@ -1,49 +1,68 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { habitApi } from '../services/api'
 
 const HabitContext = createContext()
 
 export function HabitProvider({ children }) {
   const [habits, setHabits] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const addHabit = (name) => {
-    const newHabit = {
-      id: crypto.randomUUID(),
-      name,
-      createdAt: new Date().toISOString(),
-      completions: []
+  // Fetch habits on mount
+  useEffect(() => {
+    fetchHabits()
+  }, [])
+
+  const fetchHabits = async () => {
+    try {
+      setLoading(true)
+      const data = await habitApi.getAll()
+      setHabits(data)
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-    setHabits([...habits, newHabit])
   }
 
-  const deleteHabit = (id) => {
-    setHabits(habits.filter(h => h.id !== id))
+  const addHabit = async (name, description = '') => {
+    try {
+      const newHabit = await habitApi.create(name, description)
+      setHabits([newHabit, ...habits])
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
-  const toggleCompletion = (habitId, date) => {
-    setHabits(habits.map(habit => {
-      if (habit.id !== habitId) return habit
+  const deleteHabit = async (id) => {
+    try {
+      await habitApi.delete(id)
+      setHabits(habits.filter(h => h._id !== id))
+    } catch (err) {
+      setError(err.message)
+    }
+  }
 
+  const toggleCompletion = async (habitId, date) => {
+    try {
       const dateStr = date.toISOString().split('T')[0]
-      const hasCompletion = habit.completions.includes(dateStr)
-
-      return {
-        ...habit,
-        completions: hasCompletion
-          ? habit.completions.filter(d => d !== dateStr)
-          : [...habit.completions, dateStr]
-      }
-    }))
+      const updatedHabit = await habitApi.toggleCompletion(habitId, dateStr)
+      setHabits(habits.map(h => h._id === habitId ? updatedHabit : h))
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   const isCompletedOn = (habitId, date) => {
-    const habit = habits.find(h => h.id === habitId)
+    const habit = habits.find(h => h._id === habitId)
     if (!habit) return false
     const dateStr = date.toISOString().split('T')[0]
     return habit.completions.includes(dateStr)
   }
 
   const getStreak = (habitId) => {
-    const habit = habits.find(h => h.id === habitId)
+    const habit = habits.find(h => h._id === habitId)
     if (!habit || habit.completions.length === 0) return 0
 
     const sortedDates = [...habit.completions].sort().reverse()
@@ -73,11 +92,14 @@ export function HabitProvider({ children }) {
   return (
     <HabitContext.Provider value={{
       habits,
+      loading,
+      error,
       addHabit,
       deleteHabit,
       toggleCompletion,
       isCompletedOn,
-      getStreak
+      getStreak,
+      refetch: fetchHabits
     }}>
       {children}
     </HabitContext.Provider>
